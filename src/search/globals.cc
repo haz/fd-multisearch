@@ -204,6 +204,28 @@ void read_goal(istream &in) {
     check_magic(in, "end_goal");
 }
 
+void read_goal_MUISE(istream &in) {
+    check_magic(in, "begin_goal");
+    int count, num_goals;
+    in >> num_goals;
+    for (int g = 0; g < num_goals; ++g) {
+        g_goal_MUISE.push_back(new std::vector<std::pair<int, int>>());
+        in >> count;
+        if (count < 1) {
+            cerr << "Task has no goal condition!" << endl;
+            utils::exit_with(ExitCode::INPUT_ERROR);
+        }
+        for (int i = 0; i < count; ++i) {
+            int var, val;
+            in >> var >> val;
+            g_goal_MUISE[g]->push_back(make_pair(var, val));
+        }
+    }
+    for (auto varval : *(g_goal_MUISE[0]))
+        g_goal.push_back(make_pair(varval.first, varval.second));
+    check_magic(in, "end_goal");
+}
+
 void dump_goal() {
     cout << "Goal Conditions:" << endl;
     for (size_t i = 0; i < g_goal.size(); ++i)
@@ -235,13 +257,26 @@ void read_everything(istream &in) {
     read_mutexes(in);
     g_initial_state_data.resize(g_variable_domain.size());
     check_magic(in, "begin_state");
-    for (size_t i = 0; i < g_variable_domain.size(); ++i) {
+    /*for (size_t i = 0; i < g_variable_domain.size(); ++i) {
         in >> g_initial_state_data[i];
+    }*/
+    int num_inits;
+    in >> num_inits;
+    cout << "NUM INITS: " << num_inits << endl;
+    for (int init_i = 0; init_i < num_inits; ++init_i) {
+        g_initial_state_data_MUISE.push_back(new std::vector<int>(g_variable_domain.size()));
+        cout << (*(g_initial_state_data_MUISE[init_i])).size() << endl;
+        for (size_t i = 0; i < g_variable_domain.size(); ++i) {
+            in >> (*(g_initial_state_data_MUISE[init_i]))[i];
+        }
+    }
+    for (size_t i = 0; i < g_variable_domain.size(); ++i) {
+        g_initial_state_data[i] = (*(g_initial_state_data_MUISE[0]))[i];
     }
     check_magic(in, "end_state");
     g_default_axiom_values = g_initial_state_data;
 
-    read_goal(in);
+    read_goal_MUISE(in);
     read_operators(in);
     read_axioms(in);
 
@@ -370,6 +405,10 @@ vector<GlobalOperator> g_operators;
 vector<GlobalOperator> g_axioms;
 AxiomEvaluator *g_axiom_evaluator;
 SuccessorGenerator *g_successor_generator;
+
+vector<vector<int> *> g_initial_state_data_MUISE;
+vector<vector<pair<int, int>> *> g_goal_MUISE;
+int current_search_MUISE = 0;
 
 string g_plan_filename = "sas_plan";
 int g_num_previously_generated_plans = 0;
