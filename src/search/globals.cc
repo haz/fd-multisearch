@@ -262,10 +262,8 @@ void read_everything(istream &in) {
     }*/
     int num_inits;
     in >> num_inits;
-    cout << "NUM INITS: " << num_inits << endl;
     for (int init_i = 0; init_i < num_inits; ++init_i) {
         g_initial_state_data_MUISE.push_back(new std::vector<int>(g_variable_domain.size()));
-        cout << (*(g_initial_state_data_MUISE[init_i])).size() << endl;
         for (size_t i = 0; i < g_variable_domain.size(); ++i) {
             in >> (*(g_initial_state_data_MUISE[init_i]))[i];
         }

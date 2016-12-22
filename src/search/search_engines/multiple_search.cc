@@ -10,47 +10,41 @@ using namespace std;
 namespace multiple_search {
 MultipleSearch::MultipleSearch(const Options &opts)
     : SearchEngine(opts),
-      engine_configs(opts.get_list<ParseTree>("engine_configs")),
-      pass_bound(opts.get<bool>("pass_bound")),
-      repeat_last_phase(opts.get<bool>("repeat_last")),
-      continue_on_fail(opts.get<bool>("continue_on_fail")),
-      continue_on_solve(opts.get<bool>("continue_on_solve")),
-      phase(0),
-      last_phase_found_solution(false),
-      best_bound(bound),
-      iterated_found_solution(false) {
-}
+      engine_config(opts.get_list<ParseTree>("engine_configs")[0]),
+      phase(0) {}
 
-SearchEngine *MultipleSearch::get_search_engine(
-    int engine_configs_index) {
-    OptionParser parser(engine_configs[engine_configs_index], false);
+SearchEngine *MultipleSearch::get_search_engine(int problem_index) {
+
+    cout << "\n------------------------------------------" << endl;
+    cout << "\nNew Init:" << endl;
+    for (size_t i = 0; i < g_variable_domain.size(); ++i) {
+        g_initial_state_data[i] = (*(g_initial_state_data_MUISE[problem_index]))[i];
+        cout << "var" << i << " = " << g_initial_state_data[i] << endl;
+    }
+
+    cout << "\nNew Goal:" << endl;
+    for (auto varval : *(g_goal_MUISE[problem_index])) {
+        cout << "var" << varval.first << " = " << varval.second << endl;
+        g_goal.push_back(make_pair(varval.first, varval.second));
+    }
+    cout << endl;
+
+    OptionParser parser(engine_config, false);
     SearchEngine *engine = parser.start_parsing<SearchEngine *>();
 
     cout << "Starting search: ";
-    kptree::print_tree_bracketed(engine_configs[engine_configs_index], cout);
+    kptree::print_tree_bracketed(engine_config, cout);
     cout << endl;
 
     return engine;
 }
 
 SearchEngine *MultipleSearch::create_phase(int phase) {
-    int num_phases = engine_configs.size();
-    if (phase >= num_phases) {
-        /* We've gone through all searches. We continue if
-           repeat_last_phase is true, but *not* if we didn't find a
-           solution the last time around, since then this search would
-           just behave the same way again (assuming determinism, which
-           we might not actually have right now, but strive for). So
-           this overrides continue_on_fail.
-        */
-        if (repeat_last_phase && last_phase_found_solution) {
-            return get_search_engine(engine_configs.size() - 1);
-        } else {
-            return nullptr;
-        }
-    }
-
-    return get_search_engine(phase);
+    int num_phases = g_goal_MUISE.size();
+    if (phase >= num_phases)
+        return nullptr;
+    else
+        return get_search_engine(phase);
 }
 
 SearchStatus MultipleSearch::step() {
@@ -58,26 +52,17 @@ SearchStatus MultipleSearch::step() {
     if (!current_search) {
         return found_solution() ? SOLVED : FAILED;
     }
-    if (pass_bound) {
-        current_search->set_bound(best_bound);
-    }
+    
+    current_search->set_bound(999999);
     ++phase;
 
     current_search->search();
 
     SearchEngine::Plan found_plan;
-    int plan_cost = 0;
-    last_phase_found_solution = current_search->found_solution();
-    if (last_phase_found_solution) {
-        iterated_found_solution = true;
-        found_plan = current_search->get_plan();
-        plan_cost = calculate_plan_cost(found_plan);
-        if (plan_cost < best_bound) {
-            save_plan(found_plan, true);
-            best_bound = plan_cost;
-            set_plan(found_plan);
-        }
-    }
+    cout << endl;
+    if (current_search->found_solution())
+        save_plan(current_search->get_plan(), true);
+    cout << endl;
     current_search->print_statistics();
 
     const SearchStatistics &current_stats = current_search->get_statistics();
@@ -88,30 +73,7 @@ SearchStatus MultipleSearch::step() {
     statistics.inc_generated_ops(current_stats.get_generated_ops());
     statistics.inc_reopened(current_stats.get_reopened());
 
-    return step_return_value();
-}
-
-SearchStatus MultipleSearch::step_return_value() {
-    if (iterated_found_solution)
-        cout << "Best solution cost so far: " << best_bound << endl;
-
-    if (last_phase_found_solution) {
-        if (continue_on_solve) {
-            cout << "Solution found - keep searching" << endl;
-            return IN_PROGRESS;
-        } else {
-            cout << "Solution found - stop searching" << endl;
-            return SOLVED;
-        }
-    } else {
-        if (continue_on_fail) {
-            cout << "No solution found - keep searching" << endl;
-            return IN_PROGRESS;
-        } else {
-            cout << "No solution found - stop searching" << endl;
-            return iterated_found_solution ? SOLVED : FAILED;
-        }
-    }
+    return IN_PROGRESS;
 }
 
 void MultipleSearch::print_statistics() const {
