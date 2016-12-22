@@ -166,7 +166,7 @@ Atom vehicle-at(l-7-1)
 end_variable
 0
 begin_state
-3
+4
 0
 0
 0
@@ -224,17 +224,38 @@ begin_state
 0
 0
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
 end_state
 begin_goal
-3
+4
 1
 18 6
 1
 18 6
 3
-18 17
 5 0
-7 0
+17 0
+18 17
+1
+18 6
 end_goal
 113
 begin_operator
