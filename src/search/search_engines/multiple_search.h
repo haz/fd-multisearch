@@ -3,6 +3,7 @@
 
 #include "../option_parser_util.h"
 #include "../search_engine.h"
+#include "../utils/timer.h"
 
 namespace options {
 class Options;

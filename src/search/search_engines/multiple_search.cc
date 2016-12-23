@@ -13,7 +13,9 @@ MultipleSearch::MultipleSearch(const Options &opts)
       engine_config(opts.get<ParseTree>("engine_config")),
       phase(0) {}
 
-SearchEngine *MultipleSearch::get_search_engine(int problem_index) {
+SearchEngine *MultipleSearch::get_search_engine(int _problem_index) {
+
+    int problem_index = _problem_index % g_goal_MUISE.size();
 
     cout << "\n------------------------------------------" << endl;
     cout << "\nNew Init:" << endl;
@@ -41,8 +43,7 @@ SearchEngine *MultipleSearch::get_search_engine(int problem_index) {
 }
 
 SearchEngine *MultipleSearch::create_phase(int phase) {
-    int num_phases = g_goal_MUISE.size();
-    if (phase >= num_phases)
+    if (utils::g_timer() > 10.0)
         return nullptr;
     else
         return get_search_engine(phase);
