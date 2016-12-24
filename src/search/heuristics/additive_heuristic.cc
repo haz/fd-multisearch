@@ -11,11 +11,15 @@
 using namespace std;
 
 namespace additive_heuristic {
+
+static const bool VERBOSE = false;
+
 // construction and destruction
 AdditiveHeuristic::AdditiveHeuristic(const Options &opts)
     : RelaxationHeuristic(opts),
       did_write_overflow_warning(false) {
-    cout << "Initializing additive heuristic..." << endl;
+    if (VERBOSE)
+        cout << "Initializing additive heuristic..." << endl;
 }
 
 AdditiveHeuristic::~AdditiveHeuristic() {
