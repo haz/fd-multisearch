@@ -8,6 +8,10 @@
 using namespace std;
 
 namespace multiple_search {
+
+static const bool VERBOSE = false;
+static const bool SAVE_PLAN = false;
+
 MultipleSearch::MultipleSearch(const Options &opts)
     : SearchEngine(opts),
       engine_config(opts.get<ParseTree>("engine_config")),
@@ -17,36 +21,47 @@ SearchEngine *MultipleSearch::get_search_engine(int _problem_index) {
 
     int problem_index = _problem_index % g_goal_MUISE.size();
 
-    cout << "\n------------------------------------------" << endl;
-    cout << "\nNew Init:" << endl;
+    if (VERBOSE) {
+        cout << "\n------------------------------------------" << endl;
+        cout << "\nNew Init:" << endl;
+    }
     for (size_t i = 0; i < g_variable_domain.size(); ++i) {
         g_initial_state_data[i] = (*(g_initial_state_data_MUISE[problem_index]))[i];
-        cout << "var" << i << " = " << g_initial_state_data[i] << endl;
+        if (VERBOSE)
+            cout << "var" << i << " = " << g_initial_state_data[i] << endl;
     }
 
-    cout << "\nNew Goal:" << endl;
+    if (VERBOSE)
+        cout << "\nNew Goal:" << endl;
     g_goal.clear();
     for (auto varval : *(g_goal_MUISE[problem_index])) {
-        cout << "var" << varval.first << " = " << varval.second << endl;
+        if (VERBOSE)
+            cout << "var" << varval.first << " = " << varval.second << endl;
         g_goal.push_back(make_pair(varval.first, varval.second));
     }
-    cout << endl;
+    if (VERBOSE)
+        cout << endl;
 
     OptionParser parser(engine_config, false);
     SearchEngine *engine = parser.start_parsing<SearchEngine *>();
 
-    cout << "Starting search: ";
-    kptree::print_tree_bracketed(engine_config, cout);
-    cout << endl;
+    if (VERBOSE) {
+        cout << "Starting search: ";
+        kptree::print_tree_bracketed(engine_config, cout);
+        cout << endl;
+    }
 
     return engine;
 }
 
 SearchEngine *MultipleSearch::create_phase(int phase) {
-    if (utils::g_timer() > 10.0)
+    if (utils::g_timer() > 10.0) {
+        cout << "Time limit exceeded!\n"
+             << phase << " phases completed" << endl;
         return nullptr;
-    else
+    } else {
         return get_search_engine(phase);
+    }
 }
 
 SearchStatus MultipleSearch::step() {
@@ -60,11 +75,16 @@ SearchStatus MultipleSearch::step() {
     current_search->search();
 
     SearchEngine::Plan found_plan;
-    cout << endl;
-    if (current_search->found_solution())
-        save_plan(current_search->get_plan(), true);
-    cout << endl;
-    current_search->print_statistics();
+    if (VERBOSE)
+        cout << endl;
+    if (SAVE_PLAN) {
+        if (current_search->found_solution())
+            save_plan(current_search->get_plan(), true);
+    }
+    if (VERBOSE) {
+        cout << endl;
+        current_search->print_statistics();
+    }
 
     const SearchStatistics &current_stats = current_search->get_statistics();
     statistics.inc_expanded(current_stats.get_expanded());
@@ -78,8 +98,10 @@ SearchStatus MultipleSearch::step() {
 }
 
 void MultipleSearch::print_statistics() const {
-    cout << "Cumulative statistics:" << endl;
-    statistics.print_detailed_statistics();
+    if (VERBOSE) {
+        cout << "Cumulative statistics:" << endl;
+        statistics.print_detailed_statistics();
+    }
 }
 
 void MultipleSearch::save_plan_if_necessary() const { }
