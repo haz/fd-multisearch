@@ -4,7 +4,7 @@ if [[ "$BUILD" == "" ]]; then
     BUILD=release64
 fi
 ./build.py -j4 "$BUILD"
-time ./fast-downward.py --build="$BUILD" multi-output.sas --search "multiple(lazy_greedy(ff()))" > OUTPUT
+time ./fast-downward.py --build="$BUILD" multi-output.sas --search "multiple()" > OUTPUT
 wc -l OUTPUT
 grep "phases completed" OUTPUT || \
     echo "$(grep -c "Solution found" OUTPUT) tasks solved"
