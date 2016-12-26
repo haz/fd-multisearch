@@ -5,17 +5,18 @@
 #include "../search_engine.h"
 #include "../utils/timer.h"
 
+#include <memory>
+
 namespace options {
 class Options;
 }
 
 namespace multiple_search {
 class MultipleSearch : public SearchEngine {
-    const options::ParseTree engine_config;
     int phase;
 
-    SearchEngine *get_search_engine(int problem_index);
-    SearchEngine *create_phase(int phase);
+    std::unique_ptr<SearchEngine> get_search_engine(int problem_index);
+    std::unique_ptr<SearchEngine> create_phase(int phase);
 
     virtual SearchStatus step() override;
 
