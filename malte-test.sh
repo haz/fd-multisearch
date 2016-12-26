@@ -14,3 +14,5 @@ grep "phases completed" OUTPUT || \
 ## - remove most output; don't save plans: 66692
 ##   - same, debug32 build: 58823
 ##   - same, release64 build: 80046
+## [all numbers below for release64 build]
+## - build sub-search manually (avoid using option parser code): 137182
