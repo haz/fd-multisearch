@@ -24,6 +24,18 @@ FFHeuristic::FFHeuristic(const Options &opts)
 FFHeuristic::~FFHeuristic() {
 }
 
+void FFHeuristic::reset() {
+    for (auto prop : goal_propositions)
+        prop->is_goal = false;
+    
+    goal_propositions.clear();
+    
+    for (auto varval : g_goal) {
+        propositions[varval.first][varval.second].is_goal = true;
+        goal_propositions.push_back(&(propositions[varval.first][varval.second]));
+    }
+}
+
 void FFHeuristic::mark_preferred_operators_and_relaxed_plan(
     const State &state, Proposition *goal) {
     if (!goal->marked) { // Only consider each subgoal once.

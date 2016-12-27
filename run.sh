@@ -23,8 +23,8 @@ elif [[ "$1" == "memuse" ]] ; then
     rm -rf massif.log
 elif [[ "$1" == "profile" ]] ; then
     valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes ./builds/$BUILD/bin/downward --search "multiple()" --internal-plan-file sas_plan < "$TARGET" > /dev/null
-    kcachegrind callgrind.out.*
-    #python gprof2dot.py --format=callgrind --output=out.dot callgrind.out.*; dot -T png out.dot -o out.png
+    #kcachegrind callgrind.out.*
+    python gprof2dot.py --format=callgrind --output=out.dot callgrind.out.*; dot -T png out.dot -o out.png
     rm -rf callgrind.out.*
     rm -rf out.dot
 fi
