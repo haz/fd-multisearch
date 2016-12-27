@@ -68,26 +68,8 @@ MultipleSearch::MultipleSearch(const Options &opts)
 unique_ptr<SearchEngine> MultipleSearch::get_search_engine(int _problem_index) {
     int problem_index = _problem_index % g_goal_MUISE.size();
 
-    if (VERBOSE) {
-        cout << "\n------------------------------------------" << endl;
-        cout << "\nNew Init:" << endl;
-    }
-    for (size_t i = 0; i < g_variable_domain.size(); ++i) {
-        g_initial_state_data[i] = (*(g_initial_state_data_MUISE[problem_index]))[i];
-        if (VERBOSE)
-            cout << "var" << i << " = " << g_initial_state_data[i] << endl;
-    }
-
-    if (VERBOSE)
-        cout << "\nNew Goal:" << endl;
-    g_goal.clear();
-    for (auto varval : *(g_goal_MUISE[problem_index])) {
-        if (VERBOSE)
-            cout << "var" << varval.first << " = " << varval.second << endl;
-        g_goal.push_back(make_pair(varval.first, varval.second));
-    }
-    if (VERBOSE)
-        cout << endl;
+    g_initial_state_data = *(g_initial_state_data_MUISE[problem_index]);
+    g_goal = *(g_goal_MUISE[problem_index]);
 
     return build_lazy_ff_search();
 }
@@ -118,6 +100,10 @@ SearchStatus MultipleSearch::step() {
     if (SAVE_PLAN) {
         if (current_search->found_solution())
             save_plan(current_search->get_plan(), true);
+    }
+    if (!(current_search->found_solution())) {
+        cout << "ERROR: Should always have a solution during this test." << endl;
+        return FAILED;
     }
     if (VERBOSE) {
         cout << endl;
