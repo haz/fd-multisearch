@@ -63,6 +63,10 @@ extern IntPacker *g_state_packer;
 extern std::vector<int> g_initial_state_data;
 extern std::vector<std::pair<int, int>> g_goal;
 
+extern std::vector<std::vector<int> *> g_initial_state_data_MUISE;
+extern std::vector<std::vector<std::pair<int, int>> *> g_goal_MUISE;
+extern int current_search_MUISE;
+
 extern std::vector<GlobalOperator> g_operators;
 extern std::vector<GlobalOperator> g_axioms;
 extern AxiomEvaluator *g_axiom_evaluator;
