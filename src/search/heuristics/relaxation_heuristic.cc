@@ -16,6 +16,9 @@
 using namespace std;
 
 namespace relaxation_heuristic {
+
+static const bool VERBOSE = false;
+
 // construction and destruction
 RelaxationHeuristic::RelaxationHeuristic(const options::Options &opts)
     : Heuristic(opts) {
@@ -103,7 +106,10 @@ void RelaxationHeuristic::simplify() {
       effect->id, base_cost and precondition.
     */
 
-
+    if (VERBOSE)
+        cout << "\n  {{ Skipping simplification of unary operators }}\n" << endl;
+    return;
+    /*
     cout << "Simplifying " << unary_operators.size() << " unary operators..." << flush;
 
     typedef pair<vector<Proposition *>, Proposition *> Key;
@@ -182,5 +188,6 @@ void RelaxationHeuristic::simplify() {
         });
 
     cout << " done! [" << unary_operators.size() << " unary operators]" << endl;
+    */
 }
 }
