@@ -1,10 +1,12 @@
 #! /bin/bash
+#TARGET=multi-output-small.sas
+TARGET=multi-output-big.sas
 BUILD="$1"
 if [[ "$BUILD" == "" ]]; then
     BUILD=release64
 fi
 ./build.py -j4 "$BUILD"
-time ./fast-downward.py --build="$BUILD" multi-output.sas --search "multiple()" > OUTPUT
+time ./fast-downward.py --build="$BUILD" "$TARGET" --search "multiple()" > OUTPUT
 wc -l OUTPUT
 grep "phases completed" OUTPUT || \
     echo "$(grep -c "Solution found" OUTPUT) tasks solved"
