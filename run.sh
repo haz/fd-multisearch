@@ -6,8 +6,8 @@
 #BUILD=debug32
 BUILD=release64
 
-TARGET=multi-output-small.sas
-#TARGET=multi-output-big.sas
+#TARGET=multi-output-small.sas
+TARGET=multi-output-big.sas
 
 if [[ $# -eq 0 ]] ; then
     ./fast-downward.py --build="$BUILD" "$TARGET" --search "multiple()"
