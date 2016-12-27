@@ -260,6 +260,13 @@ fast_downward_plugin(
 )
 
 fast_downward_plugin(
+    NAME MULTIPLE_SEARCH
+    HELP "Multiple search algorithm"
+    SOURCES
+        search_engines/multiple_search
+)
+
+fast_downward_plugin(
     NAME LAZY_SEARCH
     HELP "Lazy search algorithm"
     SOURCES

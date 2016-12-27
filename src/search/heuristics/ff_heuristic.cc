@@ -10,11 +10,15 @@
 using namespace std;
 
 namespace ff_heuristic {
+
+static const bool VERBOSE = false;
+
 // construction and destruction
 FFHeuristic::FFHeuristic(const Options &opts)
     : AdditiveHeuristic(opts),
       relaxed_plan(task_proxy.get_operators().size(), false) {
-    cout << "Initializing FF heuristic..." << endl;
+    if (VERBOSE)
+        cout << "Initializing FF heuristic..." << endl;
 }
 
 FFHeuristic::~FFHeuristic() {
