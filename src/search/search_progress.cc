@@ -7,6 +7,7 @@
 #include <string>
 using namespace std;
 
+static const bool VERBOSE = false;
 
 bool SearchProgress::process_heuristic_value(const Heuristic *heuristic, int h) {
     /*
@@ -37,8 +38,10 @@ bool SearchProgress::check_progress(const EvaluationContext &eval_context) {
         [this, &progress](const Heuristic *heur, const EvaluationResult &result) {
         int h = result.get_h_value();
         if (process_heuristic_value(heur, h)) {
-            cout << "New best heuristic value for "
-                 << heur->get_description() << ": " << h << endl;
+            if (VERBOSE) {
+                cout << "New best heuristic value for "
+                     << heur->get_description() << ": " << h << endl;
+            }
             progress = true;
         }
     }
