@@ -21,6 +21,8 @@ using namespace std;
 namespace lazy_search {
 static const int DEFAULT_LAZY_BOOST = 1000;
 
+static const bool VERBOSE = false;
+
 LazySearch::LazySearch(const Options &opts)
     : SearchEngine(opts),
       open_list(opts.get<shared_ptr<OpenListFactory>>("open")->
@@ -47,7 +49,8 @@ void LazySearch::set_pref_operator_heuristics(
 }
 
 void LazySearch::initialize() {
-    cout << "Conducting lazy best first search, (real) bound = " << bound << endl;
+    if (VERBOSE)
+        cout << "Conducting lazy best first search, (real) bound = " << bound << endl;
 
     assert(open_list);
     set<Heuristic *> hset;
@@ -182,8 +185,10 @@ SearchStatus LazySearch::step() {
                 statistics.inc_reopened();
             } else if (current_predecessor_id == StateID::no_state) {
                 node.open_initial();
-                if (search_progress.check_progress(current_eval_context))
-                    print_checkpoint_line(current_g);
+                if (VERBOSE) {
+                    if (search_progress.check_progress(current_eval_context))
+                        print_checkpoint_line(current_g);
+                }
             } else {
                 node.open(parent_node, current_operator);
             }
@@ -191,7 +196,8 @@ SearchStatus LazySearch::step() {
             if (check_goal_and_set_plan(current_state))
                 return SOLVED;
             if (search_progress.check_progress(current_eval_context)) {
-                print_checkpoint_line(current_g);
+                if (VERBOSE)
+                    print_checkpoint_line(current_g);
                 reward_progress();
             }
             generate_successors();
@@ -200,8 +206,10 @@ SearchStatus LazySearch::step() {
             node.mark_as_dead_end();
             statistics.inc_dead_ends();
         }
-        if (current_predecessor_id == StateID::no_state) {
-            print_initial_h_values(current_eval_context);
+	if (VERBOSE) {
+            if (current_predecessor_id == StateID::no_state) {
+                print_initial_h_values(current_eval_context);
+            }
         }
     }
     return fetch_next_state();
@@ -218,8 +226,10 @@ void LazySearch::print_checkpoint_line(int g) const {
 }
 
 void LazySearch::print_statistics() const {
-    statistics.print_detailed_statistics();
-    search_space.print_statistics();
+    if (VERBOSE) {
+        statistics.print_detailed_statistics();
+        search_space.print_statistics();
+    }
 }
 
 

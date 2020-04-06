@@ -19,6 +19,9 @@ using namespace std;
 using utils::ExitCode;
 
 
+static const bool VERBOSE = false;
+
+
 SearchEngine::SearchEngine(const Options &opts)
     : status(IN_PROGRESS),
       solution_found(false),
@@ -73,13 +76,16 @@ void SearchEngine::search() {
         }
     }
     // TODO: Revise when and which search times are logged.
-    cout << "Actual search time: " << timer
-         << " [t=" << utils::g_timer << "]" << endl;
+    if (VERBOSE) {
+        cout << "Actual search time: " << timer
+             << " [t=" << utils::g_timer << "]" << endl;
+    }
 }
 
 bool SearchEngine::check_goal_and_set_plan(const GlobalState &state) {
     if (test_goal(state)) {
-        cout << "Solution found!" << endl;
+        if (VERBOSE)
+            cout << "Solution found!" << endl;
         Plan plan;
         search_space.trace_path(state, plan);
         set_plan(plan);

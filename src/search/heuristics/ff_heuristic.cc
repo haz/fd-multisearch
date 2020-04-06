@@ -10,14 +10,30 @@
 using namespace std;
 
 namespace ff_heuristic {
+
+static const bool VERBOSE = false;
+
 // construction and destruction
 FFHeuristic::FFHeuristic(const Options &opts)
     : AdditiveHeuristic(opts),
       relaxed_plan(task_proxy.get_operators().size(), false) {
-    cout << "Initializing FF heuristic..." << endl;
+    if (VERBOSE)
+        cout << "Initializing FF heuristic..." << endl;
 }
 
 FFHeuristic::~FFHeuristic() {
+}
+
+void FFHeuristic::reset() {
+    for (auto prop : goal_propositions)
+        prop->is_goal = false;
+    
+    goal_propositions.clear();
+    
+    for (auto varval : g_goal) {
+        propositions[varval.first][varval.second].is_goal = true;
+        goal_propositions.push_back(&(propositions[varval.first][varval.second]));
+    }
 }
 
 void FFHeuristic::mark_preferred_operators_and_relaxed_plan(

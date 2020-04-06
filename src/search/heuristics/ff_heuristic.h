@@ -27,6 +27,7 @@ class FFHeuristic : public additive_heuristic::AdditiveHeuristic {
 protected:
     virtual int compute_heuristic(const GlobalState &global_state);
 public:
+    void reset();
     FFHeuristic(const options::Options &options);
     ~FFHeuristic();
 };

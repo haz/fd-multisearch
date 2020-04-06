@@ -13,6 +13,8 @@ public:
     ScalarEvaluator() = default;
     virtual ~ScalarEvaluator() = default;
 
+    virtual void reset() {};
+
     /*
       dead_ends_are_reliable should return true if the evaluator is
       "safe", i.e., infinite estimates can be trusted.
